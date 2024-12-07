@@ -1,0 +1,26 @@
+# code_refactor_assistant.py
+
+import os
+from radon.complexity import cc_visit
+from radon.metrics import mi_visit
+
+def analyze_code(file_path):
+    with open(file_path, "r") as file:
+        code = file.read()
+    
+    complexity_scores = cc_visit(code)
+    maintainability_index = mi_visit(code)
+    
+    refactor_score = 100 - sum([func.complexity for func in complexity_scores]) + maintainability_index
+    suggestions = [
+        f"Function {func.name} has high complexity ({func.complexity}). Consider simplifying it."
+        for func in complexity_scores if func.complexity > 10
+    ]
+    return refactor_score, suggestions
+
+# Usage
+file_path = "example.py"
+score, suggestions = analyze_code(file_path)
+print(f"Refactor Score: {score}")
+print("Suggestions:")
+print("\n".join(suggestions))
